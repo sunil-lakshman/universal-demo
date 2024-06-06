@@ -1,0 +1,14 @@
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./components/CardTile/cardTile.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.cardTile_card__GpSNu {
+    padding: 2rem;
+    border-radius: 20px;
+}
+
+.cardTile_card__GpSNu:nth-child(even) {background: #E9EBF6}
+.cardTile_card__GpSNu:nth-child(odd) {background: #FFE2E6}
+
+.cardTile_card__GpSNu img {
+    height: 24rem;
+}
