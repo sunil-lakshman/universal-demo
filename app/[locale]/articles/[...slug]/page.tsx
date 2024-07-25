@@ -1,24 +1,23 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { isNull } from 'lodash'
-import { getArticleListingPage, getArticles } from '@/loaders'
+import { getArticleListingPage, getArticlesByTaxonomy } from '@/loaders'
 import {  Page } from '@/types'
 import { CardCollection, NoArticles, NotFoundComponent, PageWrapper, Pagination } from '@/components'
 import RenderComponents from '@/RenderComponents'
 import { ImageCardItem } from '@/types/components'
-import { Article } from '@/types/pages'
-import { filterArticles, isDataInLiveEdit } from '@/utils'
+import { isDataInLiveEdit } from '@/utils'
 import { onEntryChange } from '@/config'
 import useRouterHook from '@/hooks/useRouterHook'
 
-export default function ArticlePage () {
+
+export default function Article () {
     const [data, setData] = useState<Page.ArticleListingPage['entry'] | null>(null)
     const [articles, setArticles] = useState<Page.ArticleListingPage['articles'] | null>(null)
     const noArticles = articles && articles?.length > 0 ? false : true
     const [cards, setCards] = useState<ImageCardItem[] | []>([])
     const [currentPage, setCurrentPage] = useState<number>(1)
-    // eslint-disable-next-line
-    const [articlesPerPage, setArticlesPerPage] = useState<number>(12)
+    const [articlesPerPage] = useState<number>(12)
     const {path, locale} = useRouterHook()
     
     const RenderCardCollection = () => {
@@ -27,14 +26,14 @@ export default function ArticlePage () {
         const articlesList: ImageCardItem[] | [] = cards?.slice(firstIndex, lastIndex)
         return(
             !isNull(articles) && noArticles
-                ? typeof data !=='undefined' ? <NoArticles /> 
+                ? !isNull(data) && typeof data !=='undefined' ? <NoArticles /> 
                     : <> {!isDataInLiveEdit() && <NotFoundComponent />} </> // No articles, no entryData and not in live edit mode will render NotFound component
                 : <>
                     {cards?.length > 0
-                    && <CardCollection
-                        cards={articlesList}
-                        totalCount={cards?.length}
-                    /> }
+                && <CardCollection
+                    cards={articlesList}
+                    totalCount={cards?.length}
+                /> }
                 </>
         )
     }
@@ -49,17 +48,17 @@ export default function ArticlePage () {
     }
     const fetchArticles = async () => {
         try{
-            const articleCollection = await getArticles(locale)
-            const filteredArticles:Article[] | [] = filterArticles(articleCollection, path) as Article[]
-            setArticles(filteredArticles)
+            const articleCollection = await getArticlesByTaxonomy(path, locale)
+            setArticles(articleCollection)
         } catch(error) {
             console.error('Error while fetching Articles:', error)
+            setArticles([])
         }
     }
 
     useEffect(() => {
-        fetchArticles()
         onEntryChange(fetchData)
+        fetchArticles()
     }, [])
 
     useEffect(() => {
@@ -102,4 +101,3 @@ export default function ArticlePage () {
     </>
     )
 }
-

@@ -62,7 +62,8 @@ export interface Navigation extends Entry {
 }
 export interface Footer extends Entry {
   sections?:FooterSection[];
-  copyright_info: string;
+  copyright_info?: string;
+  built_by?: string;
   $?: MappedPreview<Footer>;
   logo?: Asset;
 }
@@ -73,11 +74,12 @@ export interface FooterSection extends FooterLink {
 
 export interface FooterLink {
   $?: MappedPreview<FooterLink>
+  title?: string;
   text?: string
   link: InternalLink[]
   external_link?: {
     title?: string
-    url?: string
+    href?:string
   }
 }
  

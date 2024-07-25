@@ -13,19 +13,20 @@ import { App } from '@/types'
 import useRouterHook from '@/hooks/useRouterHook'
 import { getJsonCookie, isCookieExist } from '@/utils'
 import { localeCookieName } from '@/config'
+import { Locale } from '@/types/common'
 import { LanguageSelector } from '../LanguageSelector'
 
 function Header (props: App.Header) {
 
-    // eslint-disable-next-line
-    const [, setData] = useState(props)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [data, setData] = useState(props)
     const { logo, items } = props
     
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [Opac, setOpac] = useState<boolean>(true)
     const [currPanel, setCurrPanel] = useState('')
     const [, setOpen] = useState(false)
-    const [locales, setLocales] = useState<any>([])
+    const [locales, setLocales] = useState<Locale[] | []>([])
     const {path} = useRouterHook()
     const isHome:boolean = (path === '/') ? true : false 
 
@@ -54,7 +55,7 @@ function Header (props: App.Header) {
     }, [])
 
     const handleMouseOver = (e: React.MouseEvent) => {
-        const title = (e.target as HTMLElement).getAttribute('data-title')
+        const title = (e.target as HTMLElement).getAttribute('data-title') || (e.target as HTMLElement)?.parentElement?.getAttribute('data-title')
         if (title && title !== null) {
             setCurrPanel(title)
         }
@@ -78,8 +79,8 @@ function Header (props: App.Header) {
 
     return (
         <header id='header-component' className={`${isHome ? 'mt-[-80px]' : ''} bg-white sticky top-0 z-50 hover:bg-white ${(!Opac) ? 'bg-opacity-100' : 'bg-opacity-20'}`}>
-            <nav className={`mx-auto flex items-center justify-between px-4 py-5 lg:px-8 ${mobileMenuOpen ? 'hidden sm:block' : ''}` }aria-label='Global'>
-                <div className='flex lg:flex-1'>
+            <nav className={`mx-auto flex items-center justify-between px-4 py-5 lg:px-8 ${mobileMenuOpen ? 'hidden sm:block' : ''}` } aria-label='Global'>
+                <div className='flex lg:flex-1`'>
                     {logo?.url && <Link url='/' className={'-m-1.5 ml-1.5 p-1.5'}>
                         <span className='sr-only'>Site Logo</span>
                         <img
@@ -122,21 +123,14 @@ function Header (props: App.Header) {
                 <Popover.Group className='hidden lg:flex lg:gap-x-12'>
                     {items?.map((item, itemInd) => (
                         item?.mega_menu?.length ? <Popover key={item.text} data-id={`navItem-${itemInd}`} className='flex'>
-                            <Popover.Button className='flex items-center gap-x-1 text-m font-semibold leading-6 text-gray-900 outline-none'>
-                                {currPanel === item?.text 
-                                    ? <span
-                                        onClick={()=> {setCurrPanel('')}}
-                                        className='flex items-center gap-x-1'
-                                    >
-                                        {item.text}
-                                        <ChevronUpIcon className='h-5 w-5 flex-none text-gray-900' aria-hidden='true' />
-                                    </span>
-                                    : <span
-                                        onClick={()=> {item?.text && setCurrPanel(item.text)}}
-                                        className='flex items-center gap-x-1'
-                                    >
-                                        {item.text}<ChevronDownIcon className='h-5 w-5 flex-none text-gray-900' aria-hidden='true' />
-                                    </span>}
+                            <Popover.Button
+                                className='flex items-center gap-x-1 text-m font-semibold leading-6 text-gray-900 outline-none'
+                            >
+                                <span
+                                    className='flex items-center gap-x-1π'
+                                >
+                                    {item.text}<ChevronDownIcon className='h-5 w-5 flex-none text-gray-900  ui-open:transform ui-open:rotate-180' aria-hidden='true' />
+                                </span>
                             </Popover.Button>
 
                             <Transition
@@ -169,7 +163,7 @@ function Header (props: App.Header) {
                                                         </p>}
                                                         <Link
                                                             url={linkData?.link?.[0]?.url}
-                                                            className='flex flex-col outline-none'
+                                                            className='flex flex-col'
                                                         >
                                                             {linkData?.thumbnail?.url && <img
                                                                 src={linkData.thumbnail.url.indexOf('?') > -1 ? `${linkData.thumbnail.url}&auto=webp&format=pjpg` : `${linkData.thumbnail.url}?auto=webp&format=pjpg`} className='object-cover h-40'
@@ -192,7 +186,7 @@ function Header (props: App.Header) {
                         </Popover> : <>
                             {item?.link?.[0]?.url && <Link 
                                 url={item.link[0].url}
-                                className='flex items-center gap-x-1 text-m font-semibold leading-6 text-gray-900 outline-none'
+                                className='flex items-center gap-x-1 text-m font-semibold leading-6 text-gray-900'
                             >
                                 {item.text}
                             </Link>}
@@ -207,8 +201,8 @@ function Header (props: App.Header) {
 
             {/* MOBILE MENU */}
             <Dialog as='div' className='lg:hidden' open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-                <div className='fixed inset-0 z-10' />
-                <Dialog.Panel className='fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10'>
+                <div className='fixed inset-0 z-50' />
+                <Dialog.Panel className='fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10'>
                     <div className='flex items-center justify-between'>
                         <div className='flex lg:flex-1'>
                             {logo?.url && <Link url='/' className='-m-1.5 ml-1.5 p-1.5'>
@@ -258,16 +252,27 @@ function Header (props: App.Header) {
                                                 </Link>
                                                 {item && item?.mega_menu?.[0]?.sections && item?.mega_menu?.[0]?.sections?.length > 0 && <>
                                                     {currPanel === item?.text
-                                                        ? <ChevronUpIcon
-                                                            data-title={item?.text}
-                                                            className='block h-4 w-8 cursor-pointer'
+                                                        ? <button
                                                             onClick={handleClose}
-                                                        />
-                                                        : <ChevronDownIcon
+                                                            className='outine'
+                                                            type='button'
                                                             data-title={item?.text}
-                                                            className='block h-4 w-8 cursor-pointer'
+
+                                                        >
+                                                            <ChevronUpIcon
+                                                                className='block h-4 w-8 cursor-pointer'
+                                                            />
+                                                        </button>
+                                                        : <button
                                                             onClick={(e: React.MouseEvent) => { handleMouseOver(e) }}
-                                                        />}
+                                                            type='button'
+                                                            data-title={item?.text}
+
+                                                        >
+                                                            <ChevronDownIcon
+                                                                className='block h-4 w-8 cursor-pointer'
+                                                            />
+                                                        </button>}
                                                 </>}
 
                                             </div>
@@ -309,7 +314,7 @@ function Header (props: App.Header) {
                                         </Fragment>
                                     ))}
 
-                                    {/* STATIC DATA - NEEDS TO BE ADDED IN CMS */}
+                                    {/* CTA Group*/}
                                     {items  && items?.map((item, i: number) => (
                                         <Fragment key={`ctaGroup-${i}`}>
                                             {(item?.text === currPanel) && item?.mega_menu?.[0]?.cta_group?.[0] && CTAGroup(item.mega_menu[0].cta_group[0])}

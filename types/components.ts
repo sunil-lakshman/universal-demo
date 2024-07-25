@@ -1,6 +1,6 @@
-/* eslint-disable no-shadow */
-import { ReactNode, Dispatch, SetStateAction } from 'react'
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { Asset, MappedPreview } from './common'
+import { ArticleListingPage } from './pages'
 import { AssetPreset } from './extensions'
 
 export type Link = {
@@ -53,6 +53,7 @@ export interface Image {
   cover_image?: AssetPreset & Asset
   image_alt_text?: string;
   image_position?: string;
+  is_thumbnail?: boolean;
   $? : MappedPreview<Image>;
 }
 export interface ImageComponent extends Image {
@@ -163,10 +164,13 @@ export type ArticleCover = {
   $?: MappedPreview<ArticleCover>
 }
 
-export type RelatedRegionTopics = {
-  region?:string[]
-  topics?:string[]
-  $?:MappedPreview<RelatedRegionTopics>
+export type RelatedLinks = {
+  relatedLinks?: ArticleListingPage['entry'][] |[]
+  relatedLinksLabel?: related_links
+  $?: {
+    taxonomies?: {'data-cslp': string}
+    related_links?: { 'data-cslp': string }
+  }
 }
 
 export type RelatedArticles = {
@@ -180,6 +184,11 @@ export interface related_articles {
   number_of_articles?:number
   related_article_tags?:string[]
   $?: MappedPreview<related_articles>
+}
+
+export interface related_links {
+  text?: string
+  $?: MappedPreview<related_links>
 }
 
 export interface pagination {

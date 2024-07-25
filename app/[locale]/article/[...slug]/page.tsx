@@ -1,54 +1,68 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { isNull } from 'lodash'
-import { getArticle, getArticles } from '@/loaders'
+import { getArticle, getArticleListingPageByTaxonomy, getArticles } from '@/loaders'
 import RenderComponents from '@/RenderComponents'
 import { Page } from '@/types'
-import { ArticleCover, NotFoundComponent, PageWrapper, RelatedArticles, RelatedRegionTopics } from '@/components'
+import { ArticleCover, NotFoundComponent, PageWrapper, RelatedArticles, RelatedLinks } from '@/components'
 import { ImageCardItem } from '@/types/components'
 import { onEntryChange } from '@/config'
 import { isDataInLiveEdit } from '@/utils'
 import useRouterHook from '@/hooks/useRouterHook'
 
+
 export default function Article () {
     const [data, setData] = useState<Page.ArticlePage['entry'] | null>(null)
     const [loading, setLoading] = useState<boolean>(true)
     const [articles, setArticles] = useState<Page.ArticlePage['articles'] | null>(null)
+    const [relatedLinks, setRelatedLinks] = useState<Page.ArticleListingPage['entry'][] | []>([])
     const {path, locale} = useRouterHook()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const entryData: Page.ArticlePage['entry'] = await getArticle(path, locale)
-                setData(entryData)
-                if (!entryData && !isNull(entryData)) {
-                    throw '404'
-                }
-            } catch (err) {
-                console.error('🚀 ~ article.tsx ~ fetchData ~ err:', err)
-                setLoading(false)
+    const fetchData = async () => {
+        try {
+            const entryData: Page.ArticlePage['entry'] = await getArticle(path, locale)
+            setData(entryData)
+            if (!entryData && !isNull(entryData)) {
+                throw '404'
             }
+        } catch (err) {
+            console.error('🚀 ~ article.tsx ~ fetchData ~ err:', err)
+            setLoading(false)
         }
+    }
+    const fetchArticles = async () => {
+        try {
+            if (data && data?.taxonomies?.length > 0) {
+                if (show_related_links) {
+                    const listingData: Page.ArticleListingPage['entry'][] = await getArticleListingPageByTaxonomy(locale, data?.taxonomies)
+                    listingData && setRelatedLinks(listingData)
+                }
+                if (show_related_articles) {
+                    let articlesData: Page.ArticlePage['articles'] = await getArticles(locale, data?.taxonomies, 7)
+                    articlesData = articlesData?.filter((article) => article.uid !== data?.uid)
+                    articlesData && setArticles(articlesData)
+                } 
+            } else {
+                setRelatedLinks([])
+                setArticles([])
+            }
+            
+        } catch (err) {
+            console.error('🚀 ~ article.tsx ~ fetchArticles ~ err:', err)
+            setArticles([])
+        }
+    }
 
+    useEffect(() => {
         onEntryChange(fetchData)
-
     }, [path])
 
     useEffect(() => {
-        const fetchArticles = async () => {
-            try {
-                let articlesData: Page.ArticlePage['articles'] = await getArticles(locale)
-                articlesData = articlesData?.filter((article) => article.uid !== data?.uid)
-                articlesData && setArticles(articlesData)
-            } catch (err) {
-                console.error('🚀 ~ article.tsx ~ fetchArticles ~ err:', err)
-            }
-        }
-
-        data && !articles && fetchArticles() // articles will be fetched only when data is available and if articles are not already fetched. !articles is used as otherwise related articles was not visible in live preview panel
+        fetchArticles()
     }, [data])
 
-    const { content, title, summary, cover_image, show_related_regions_and_topics, region, topics, show_related_articles, related_articles, $ } = data || {}
+
+    const { content, title, summary, cover_image, show_related_links, related_links, show_related_articles, related_articles, $ } = data || {}
 
     const cards: ImageCardItem[] | [] = articles?.map((article) => {
         return ({
@@ -60,7 +74,7 @@ export default function Article () {
         })
     }) as ImageCardItem[] | []
 
-    const relatedArticles = cards && cards.splice(0, (data?.related_articles?.number_of_articles && data?.related_articles?.number_of_articles <= 4) ? related_articles?.number_of_articles : 4)
+    const relatedArticles = cards && cards.splice(0, (data?.related_articles?.number_of_articles && data?.related_articles?.number_of_articles <= 6) ? related_articles?.number_of_articles : 6)
 
     return (
         data ? <>
@@ -78,9 +92,9 @@ export default function Article () {
                     }
                 }]}
                 />
-                {show_related_regions_and_topics && <RelatedRegionTopics
-                    region={region}
-                    topics={topics}
+                {show_related_links && <RelatedLinks
+                    relatedLinks={relatedLinks}
+                    relatedLinksLabel={related_links}
                     $={data?.$}
                 />}
                 {show_related_articles && <RelatedArticles

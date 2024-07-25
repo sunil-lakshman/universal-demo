@@ -1,24 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { isString } from 'lodash'
 import { Image, Link } from '@/components'
 import { ImageCardItem } from '@/types/components'
-import { classNames } from '@/utils'
+import { classNames, equalHeight } from '@/utils'
 import { resolveCardCta } from './CardTile.helper'
 import styles from './cardTile.module.css'
 
 // ? TSOND-153 | Revamp code for demo purpose
 
 const CardTile: React.FC<ImageCardItem> = (props: ImageCardItem) => {
-    const { $, image, image_alt_text, title, subtitle, cta, content, count, totalCount, id, key, subtitleExists } = props
+    const { $, image, image_alt_text, title, subtitle, cta, content, count, totalCount, id, key, subtitleExists , is_thumbnail} = props
 
     // ? TSOND-153 | Revamp code for demo purpose
     const pathname = usePathname()
+
+    useEffect(() => {
+        equalHeight('.card-tile-title') // onload
+        window.addEventListener('resize', () => { // onResize
+            equalHeight('.card-tile-title')
+        })
+    })
 
     {/* eslint-disable-next-line jsx-a11y/alt-text */ }
     const cardImage = image ? <Image
         image={image}
         image_alt_text={image_alt_text}
+        is_thumbnail={is_thumbnail}
         className={classNames(
             count === 1 ? 'h-auto w-auto'
                 : count === 2 ? 'h-48 lg:h-64'
@@ -42,7 +50,7 @@ const CardTile: React.FC<ImageCardItem> = (props: ImageCardItem) => {
                     {title
                         && <h4
                             data-id='h4-text'
-                            className='text-4xl font-montserrat font-semibold text-black card-tile-title'>
+                            className='block text-4xl font-montserrat font-semibold text-black card-tile-title'>
                             {title}
                         </h4>
                     }

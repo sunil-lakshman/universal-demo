@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ErrorBoundary } from 'react-error-boundary'
 
 import {SingleCol} from '@/layout'
-import { ErrorHandler } from '@/components'
 import '@contentstack/live-preview-utils/dist/main.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -28,13 +26,9 @@ export default async function RootLayout ({
     return (
         <html lang='en'>
             <body className={inter.className}>
-                <ErrorBoundary
-                    FallbackComponent={ErrorHandler}
-                >
-                    <SingleCol>
-                        {children}
-                    </SingleCol>
-                </ErrorBoundary>
+                <SingleCol>
+                    {children}
+                </SingleCol>
             </body>
         </html>
     )

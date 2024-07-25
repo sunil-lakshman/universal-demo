@@ -40,6 +40,11 @@ const CardCollection: React.FC<CardCollectionProps> = (props: CardCollectionProp
 
     }
 
+    if ((!cards || cards.length === 0) && (!header || (header.heading === '' && header.sub_heading === ''))) {
+        return <></>
+    }
+
+
     return (
 
         <div
@@ -48,7 +53,7 @@ const CardCollection: React.FC<CardCollectionProps> = (props: CardCollectionProp
         >
             <div className='max-w-7xl mx-auto '>
 
-                {header && <CardCollectionHeader
+                {header && (header.heading != '' || header.sub_heading != '') && <CardCollectionHeader
                     id={id}
                     heading={header?.heading}
                     sub_heading={header?.sub_heading}

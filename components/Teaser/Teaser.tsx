@@ -74,7 +74,6 @@ const Teaser: React.FC<TeaserProps> = (props: TeaserProps) => {
                     </p>}
                     {cta?.[0]?.text && ctaLink && <Link
                         url={ctaLink}
-                        // eslint-disable-next-line max-len
                         className={'relative max-w-full w-max btnPrimary py-3'}
                     >
                         {cta[0].text}

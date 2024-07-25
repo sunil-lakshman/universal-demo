@@ -1,4 +1,4 @@
-// File: /Users/harshitha.d/Downloads/universal-demo-main 4/app/[locale]/page.tsx
+// File: /Users/sunil.lakshman/Downloads/universal-demo-main2/app/[locale]/page.tsx
 import * as entry from '../../../../app/[locale]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

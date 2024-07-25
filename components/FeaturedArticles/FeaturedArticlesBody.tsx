@@ -1,5 +1,5 @@
 import { classNames } from '@/utils'
-import { ArticleCardItem, FeaturedArticles } from '@/types/components'
+import { ArticleCardItem, FeaturedArticles, ImageCardItem } from '@/types/components'
 import { MappedPreview } from '@/types/common'
 import { ArticleCard } from './ArticleCard'
 
@@ -35,8 +35,7 @@ const FeaturedArticlesBody = ({cards, totalCount, id, $}:{ id?: string, cards?: 
             }
             {...$?.heading}
         >
-            {cards?.map((cardData: any, idx: number) => {
-                //eslint-disable-next-line
+            {cards?.map((cardData: ImageCardItem, idx: number) => {
                 return (<ArticleCard
                     id={id}
                     key={idx}

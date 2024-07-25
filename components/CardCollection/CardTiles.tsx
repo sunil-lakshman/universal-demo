@@ -47,8 +47,7 @@ const CardTiles = ({cards, totalCount, id}:{ id?: string | number, cards?: Image
                 )
             }
         >
-            {cards?.map((cardData: any, idx: number) => {
-                //eslint-disable-next-line
+            {cards?.map((cardData: ImageCardItem, idx: number) => {
                 return (<CardTile
                     id={id}
                     key={idx}

@@ -1,4 +1,4 @@
-// File: /Users/harshitha.d/Downloads/universal-demo-main 4/app/api/contentstack/[content_type]/[entry_uid]/locales/route.ts
+// File: /Users/sunil.lakshman/Downloads/universal-demo-main2/app/api/contentstack/[content_type]/[entry_uid]/locales/route.ts
 import * as entry from '../../../../../../../../app/api/contentstack/[content_type]/[entry_uid]/locales/route.js'
 import type { NextRequest } from 'next/server.js'
 

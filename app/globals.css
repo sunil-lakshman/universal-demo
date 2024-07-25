@@ -8,6 +8,10 @@ body {
   @apply bg-white dark:bg-black !font-montserrat
 }
 
+.single-col {
+  min-height: 90vh;
+}
+
 @media (min-width:640px)  {
 
   .card-styled:nth-child(2n-2){
@@ -57,6 +61,9 @@ body {
   .btnTertiary {
     @apply block w-full rounded-md border border-transparent bg-black !text-white text-base font-semibold text-gray-100 hover:opacity-80
   }
+  .text h1 {
+    @apply xl:mt-0 mt-4 text-4xl font-bold tracking-tight text-gray-900 sm:mt-0 sm:text-6xl dark:text-white
+  }
   .text h2 {
     @apply text-[44px] font-bold dark:text-white py-3
   }
@@ -105,11 +112,12 @@ body {
     overflow: hidden;
   }
 
-  .card-tile-title {
-    display: -webkit-box;
-    max-width: 100%;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+
+  .built-by p {
+    @apply text-gray-700 font-montserrat !font-bold;
+  }
+
+  .built-by p > a {
+    @apply hover:underline text-purple outline-none ;
   }
 }

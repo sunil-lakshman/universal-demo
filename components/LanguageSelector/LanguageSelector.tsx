@@ -1,23 +1,20 @@
 'use client'
 
-/* eslint-disable quotes */
 import { Fragment, FunctionComponent, useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import _ from 'lodash'
 
 import { App } from '@/types'
 import { Locale } from '@/types/common'
-
-const classNames = (...classes: any) => {
-    return classes.filter(Boolean).join(' ')
-}
+import useRouterHook from '@/hooks/useRouterHook'
+import { classNames, getFlagCode } from '@/utils'
 
 const LanguageSelector: FunctionComponent<App.LangaugeSelector> = (props: App.LangaugeSelector) => {
 
     const pathname = usePathname()
-    const router = useRouter()
+    const router = useRouterHook()
 
     const [currentLocale, setCurrentLocale] = useState('en')
 
@@ -28,11 +25,12 @@ const LanguageSelector: FunctionComponent<App.LangaugeSelector> = (props: App.La
     // * 2. Context API -> Page won't refresh
     const handleLanguageSwitch = (locale: Locale) => {
 
-        setCurrentLocale((locale?.code === 'en') ? 'us' : locale?.code)
+        setCurrentLocale(getFlagCode(locale?.code))
 
-        const updatedRoute = `/${locale?.code}${pathname.substring(3)}`
+        const updatedRoute = `/${locale?.code}${router.path}`
 
-        router.replace(updatedRoute)
+        // router.replace(updatedRoute) -- The edit button is not working when page is loaded using useRouterHook. The page need full refresh to enable the Edit button.
+        window.location.href = updatedRoute
 
     }
 
@@ -40,6 +38,7 @@ const LanguageSelector: FunctionComponent<App.LangaugeSelector> = (props: App.La
     const renderDropdownOptions = () => {
 
         return locales && locales?.length > 0 && _.sortBy(locales, ['name'])?.map((locale, index: number) => {
+            const flagCode = getFlagCode(locale?.code)
 
             return (
                 <Menu.Item
@@ -52,7 +51,7 @@ const LanguageSelector: FunctionComponent<App.LangaugeSelector> = (props: App.La
                         onClick={() => handleLanguageSwitch(locale)}
                         key={`language-option-${index}`}
                     >
-                        <span className={`fi fi-${(locale?.code === 'en') ? 'us' : locale?.code}`} />
+                        <span className={`fi fi-${flagCode}`} />
                         <span className=''>
                             {locale?.name}
                         </span>
@@ -66,9 +65,9 @@ const LanguageSelector: FunctionComponent<App.LangaugeSelector> = (props: App.La
 
     useEffect(() => {
 
-        const locale = pathname.substring(1).slice(0, 2)
+        const locale = getFlagCode(router.locale)
 
-        setCurrentLocale(locale)
+        locale && setCurrentLocale(locale)
 
     }, [pathname])
 

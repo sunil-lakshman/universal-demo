@@ -18,29 +18,31 @@ const Pagination: React.FC<pagination> = ({ length, dataPerPage, currentPage, se
 
     const numberOfPages: number = Math.ceil(length / dataPerPage)
 
-    const router: any = useRouter()
-    const searchParams: any = useSearchParams()
-    const path: any = usePathname()
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    const path = usePathname()
 
-    const addPageNumberinURL= (page: string) => {
-        router.replace(`${path}?page=${page}`, {scroll: false})
+    const addPageNumberinURL = (page: string) => {
+        router.replace(`${path}?page=${page}`, { scroll: false })
     }
 
     useEffect(() => {
-        // eslint-disable-next-line no-prototype-builtins
-        if (searchParams.keys().length !== 0 && searchParams.has('page')){
-        // eslint-disable-next-line radix
+        // if (searchParams.keys().length !== 0 && searchParams.has('page')){
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (searchParams.getAll('page').length !== 0 && searchParams.has('page')) {
+            // eslint-disable-next-line radix
             const queryPage: number = parseInt(searchParams.get('page') as string)
-            if( queryPage >= 1 && queryPage <= numberOfPages && queryPage !== undefined){
+            if (queryPage >= 1 && queryPage <= numberOfPages && queryPage !== undefined) {
                 handlePageNumberQueryParam(queryPage) // for tabs to change if page query typed in url
             }
-            else{
+            else {
                 addPageNumberinURL('1')
             }
             return
         }
         addPageNumberinURL('1')
-    }, [router.isReady])
+    }, [router])
 
     /**
      * @description Handle the update in URL query param and page number on page load - NO SCROLL
@@ -82,18 +84,20 @@ const Pagination: React.FC<pagination> = ({ length, dataPerPage, currentPage, se
      * @returns null
      */
     const handleScroll = () => {
-        
+
         const myDiv = document.getElementById('pagination-scroll-anchor')
-        
-        let box: any
-        
+
+        let box: DOMRect | null
+
+
         try {
-            
+
             box = myDiv && myDiv.getBoundingClientRect()
 
-            window?.scrollBy(0, box?.y - 85)
+            // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
+            window?.scrollBy(0, box!.y - 85)
 
-        } catch(e) {
+        } catch (e) {
 
             return
 
@@ -102,7 +106,7 @@ const Pagination: React.FC<pagination> = ({ length, dataPerPage, currentPage, se
 
     const renderPageNumbers = () => {
         // eslint-disable-next-line
-        return Array.apply(null, Array(numberOfPages)).map((data: any, index: number) => {
+        return Array.apply(null, Array(numberOfPages)).map((data, index: number) => {
             return (
                 <a
                     // href={'#pagination-scroll-anchor'}
@@ -125,7 +129,7 @@ const Pagination: React.FC<pagination> = ({ length, dataPerPage, currentPage, se
                     // href={'#pagination-scroll-anchor'}
                     href='javascript:void(0)'
                     className={`inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 
-                    hover:border-gray-300 hover:text-gray-700 ${((currentPage - 1) < 1)? 'pointer-events-none cursor-default opacity-50 select-none' : ''}`}
+                    hover:border-gray-300 hover:text-gray-700 ${((currentPage - 1) < 1) ? 'pointer-events-none cursor-default opacity-50 select-none' : ''}`}
                     onClick={() => handlePageClick(currentPage - 1)}
                     id='pagination-prev-btn'
                 >
@@ -143,7 +147,7 @@ const Pagination: React.FC<pagination> = ({ length, dataPerPage, currentPage, se
                     // href={'#pagination-scroll-anchor'}
                     href='javascript:void(0)'
                     className={`inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 
-                    hover:border-gray-300 hover:text-gray-700 ${((currentPage + 1) > numberOfPages)? 'pointer-events-none cursor-default opacity-50 select-none' : ''}`}
+                    hover:border-gray-300 hover:text-gray-700 ${((currentPage + 1) > numberOfPages) ? 'pointer-events-none cursor-default opacity-50 select-none' : ''}`}
                     onClick={() => handlePageClick(currentPage + 1)}
                     id='pagination-next-btn'
                 >

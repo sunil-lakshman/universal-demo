@@ -16,8 +16,7 @@ export default function ArticleListing () {
     const [cards, setCards] = useState<ImageCardItem[] | []>([])
     const noArticles = articles && articles?.length > 0 ? false : true
     const [currentPage, setCurrentPage] = useState<number>(1)
-    // eslint-disable-next-line
-    const [articlesPerPage, setArticlesPerPage] = useState<number>(12)
+    const [articlesPerPage] = useState<number>(12)
     const {path, locale} = useRouterHook()
 
     const RenderCardCollection = () => {

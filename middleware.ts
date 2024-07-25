@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { defaultLocale, localeCookieName } from '@/config/localization'
 import { createManagmentHeaders } from '@/config/contentstack/managementSDK'
 import { isLocale } from '@/utils/localization'
+import { Locale } from './types/common'
 
 const fetchLocales = async () => {
     const requestOptions = createManagmentHeaders('GET')
     const res = await fetch(`https://${process.env.CONTENTSTACK_API_HOST}/v3/locales`, requestOptions)
     const {locales} = await res.json()
-    return locales
+    
+    return locales?.length > 0 ? locales?.map((locale: Locale) => ({
+        code: locale.code,
+        name: locale.name,
+        fallback_locale: locale.fallback_locale
+    })) : []
 }
-
  
 export async function middleware (request: NextRequest) {
     const pathname = request.nextUrl.pathname
@@ -17,31 +22,37 @@ export async function middleware (request: NextRequest) {
     
     const locales =  languagesCookie?.value ? JSON.parse(languagesCookie.value) : await fetchLocales()
 
-    const preferedBrowserLang = request.headers.get('accept-language')?.split(',')?.[0]?.substring(0,2)
-    let preferredLang = defaultLocale
-
-    if(preferedBrowserLang && locales.some(({code}: {code: string}) => code === preferedBrowserLang)) { // if preferred browser language is acceptable locale
-        preferredLang = preferedBrowserLang
-    }
-
     const pathnameHasLocale = pathname.split('/')?.some((p) => {
         return isLocale(p)
     })
 
     if (pathnameHasLocale) {
-        if (!languagesCookie)  {
-            // set reponse.cookie "languages" cookie if not exist
-            // cookie will expire in 5 days
-            const response = NextResponse.next() 
-            response.cookies.set(localeCookieName, JSON.stringify(locales), { expires: new Date(Date.now() + ( 5 * 24 * 60 * 60 * 1000)) })
-            return response
+        try {
+            const response = NextResponse.next()
 
-        } // if request.cookie exist then return
-        return NextResponse.next() 
+            if (!languagesCookie)  {
+           
+                // set "languages" cookie in res.cookie - if cookie not exist 
+                // cookie will expire in 5 days
+                response.cookies.set(localeCookieName, JSON.stringify(locales), { 
+                    expires: new Date(Date.now() + ( 5 * 24 * 60 * 60 * 1000)),
+                    sameSite: 'none',
+                    secure: true
+                })
+                return response
+
+            } // if request.cookie exist then return
+
+            return response
+        
+        } catch(err) {
+            console.error('Error while parsing locale : ', err)
+            NextResponse.next()
+        }
     }
 
     // Redirect to default locale if there is no locale in url
-    request.nextUrl.pathname = `/${preferredLang}/${pathname}`
+    request.nextUrl.pathname = `/${defaultLocale}${pathname}`
     return NextResponse.redirect(request.nextUrl)
 }
  

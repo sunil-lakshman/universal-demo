@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { FunctionComponent } from 'react'
 import parse from 'html-react-parser'
 

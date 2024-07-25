@@ -11,7 +11,6 @@ import { isDataInLiveEdit } from '@/utils'
 export default function Home () {
 
     const [data, setData] = useState<Page.LandingPage['entry'] | null>(null)
-    // eslint-disable-next-line
     const [loading, setLoading] = useState<boolean>(true)
     const {path,locale} = useRouterHook()
     

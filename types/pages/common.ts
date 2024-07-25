@@ -1,4 +1,4 @@
-import { ArticleCover, CardCollection, Image, Teaser, Text, TextAndImage } from '../components'
+import { ArticleCover, CardCollection, Image, related_links, Teaser, Text, TextAndImage } from '../components'
 import { entryLocales, MappedPreview, PageEntry } from '../common'
 
 export type SeoProps = {
@@ -32,7 +32,12 @@ export type pageRenderProps = {
     components:pageBlocks[];
   }
 export interface Article extends PageEntry,ArticleCover {
-  region?: string[] | [] 
   content?:string
+  related_links?: related_links
   $?: MappedPreview<Article>
+}
+
+export type Taxonomy = {
+  taxonomy_uid:string,
+  term_uid:string
 }

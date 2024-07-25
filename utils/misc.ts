@@ -1,21 +1,9 @@
 import { isEditButtonsEnabled } from '@/config'
 import * as _ from 'lodash'
 
-// export const prefixReferenceIncludes = (mbId: string, ...references: string[]) => {
-//     const result = references.map(e => mbId + '.' + e)
-//     return result
-// }
-
 export const prefixReferenceIncludes = (mbId: string, ...references: string[]) => {
-    const result: string[] = [];
-    references.forEach(ref => {
-        if (!ref.startsWith(mbId)) {
-            result.push(mbId + '.' + ref);
-        } else {
-            result.push(ref);
-        }
-    });
-    return result;
+    const result = references.map(e => mbId + '.' + e)
+    return result
 }
 
 export const inIframe = () => {
